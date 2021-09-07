@@ -1,0 +1,2 @@
+# UCASCourseTableAndMailSevice
+邮件通知第二天课程
