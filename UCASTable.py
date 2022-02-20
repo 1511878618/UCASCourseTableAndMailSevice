@@ -5,7 +5,7 @@ import re
 
 import numpy as np 
 import os
-
+import datetime
 
 ### 处理单个课程的数据类
 
@@ -107,7 +107,7 @@ class Table(object):
         return semesterTable
         
         
-def showWeekOfSemester(semesterYear=2021):
+def showWeekOfSemester(semesterYear=2022):
     """
     semesterYear是本学期开学的年份
     这个函数用于帮助用户查看学期第一周是本年的第几周。
@@ -116,7 +116,7 @@ def showWeekOfSemester(semesterYear=2021):
     3.可以推算本学期开学是今年的第 i-a+1 周。    
     """
     
-    today = datetime.date.today()
+    today = datetime.datetime.today()
     todayIsocalendar = today.isocalendar()
     
     i = todayIsocalendar[1]

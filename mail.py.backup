@@ -19,20 +19,13 @@ beginWeek = re.findall("周:\d*",info)[0].split(':')[1]
 today = datetime.datetime.today()
 
 targetweek = today.isocalendar()[1] - int(beginWeek)+1
-tomorrowDay  = today+datetime.timedelta(days=1)
-targetWeekNum = tomorrowDay.isocalendar()[2]
-
-def turnChineseWeekToNumberWeek(chineseWeek):
-    
-    dic={"星期一":1,"星期二":2,"星期三":3,"星期四":4,"星期五":5,"星期六":6,"星期日":7}
-    return dic[chineseWeek]
-
-
+targetWeekNum = today.isocalendar()[2]+1
 ## 获取要发送的附件
 def check(user):
     # with open('semester.info','r') as f:
     #     info = f.read()
     # beginWeek = re.findall("周:\d*",info)[0].split(':')[1]
+
     # #获取第二天的日期
     # today = datetime.datetime.today()
 
@@ -44,9 +37,7 @@ def check(user):
     #获取第二天的课程
     path = 'table/''{}/'.format(user) + '{}周.csv'.format(targetweek)
     test = pd.read_csv(path)
-    print(targetWeekNum)
-    # print(test.columns.drop('time')[targetWeekNum-1])
-    targetDayTable = pd.read_csv(path)[['time',test.columns.drop('time')[targetWeekNum-1]]]
+    targetDayTable = pd.read_csv(path)[['time',test.columns[targetWeekNum-1]]]
     # print(test.columns)
     print(targetDayTable)
     if targetDayTable.iloc[:,1].isnull().all():
@@ -64,7 +55,6 @@ def check(user):
 
         targetDayTable.index = range(1,13)
         targetDayTable.to_csv("tomorrow/"+user+'.csv',index=0)
-        test.to_csv("tomorrow/"+user+'{}周.csv'.format(targetweek),index=0)
         return True
 
 
@@ -129,14 +119,13 @@ def emailTable(receiversMail,targetDayTablePath):
         
     #晚上
     nightTable = targetDayTable.iloc[8:12,:]
-    # print(nightTable)
     nightClass = nightTable.iloc[:,1].value_counts().index
     if len(nightClass) ==0:
         nightText="晚上没课嗷，可以快乐玩耍！~"
         pass
     else:
         nightClassStart = nightTable[nightTable.iloc[:,1] == nightClass[0]]['time'].iloc[0].split('~')[0]
-        nightClassEnd = nightTable[nightTable.iloc[:,1] == nightClass[0]]['time'].iloc[-1].split('~')[1]
+        nightClassEnd = nightTable[noonTable.iloc[:,1] == nightClass[0]]['time'].iloc[-1].split('~')[1]
         nightText="晚上的课程是{}，上课时间为：{}，下课时间为：{}。".format(nightClass[0],nightClassStart,nightClassEnd)
     print(nightText)
 
@@ -149,14 +138,10 @@ def emailTable(receiversMail,targetDayTablePath):
     msg.attach(part_text)             #把正文加到邮件体里面去
 
     ## 设置附件内容
-    # file = pd.read_csv("tomorrow/"+user+'{}周.csv'.format(targetweek))
-
-    #file = targetDayTablePath
-    file = targetDayTablePath[:-4] + '{}周.csv'.format(targetweek)
-    print(file)
+    file = targetDayTablePath
     part_attach1 = MIMEApplication(open(file,'rb').read())   #打开附件
 
-    part_attach1.add_header('Content-Disposition','attachment',filename=file) #为附件命名
+    part_attach1.add_header('Content-Disposition','attachment',filename="tommorw.csv") #为附件命名
 
     msg.attach(part_attach1)   #添加附件
     
